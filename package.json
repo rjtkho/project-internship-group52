@@ -1,0 +1,19 @@
+{
+  "name": "project-internship-group52",
+  "version": "1.0.0",
+  "description": "project 2  internship",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rjtkho/project-internship-group52.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rjtkho/project-internship-group52/issues"
+  },
+  "homepage": "https://github.com/rjtkho/project-internship-group52#readme"
+}

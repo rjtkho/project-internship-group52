@@ -8,8 +8,8 @@ const createInternDetails = async function (req, res) {
 
         
     try {
-        let internData=req.body
-        let data = { name, mobile, email, collegeName, } = internData
+        
+        let  { name, mobile, email, collegeName, } = req.body
         
           if(Object.keys(data).length==0) return res.status(400).send({status: false , msg :"Please enter some data"})
        
@@ -48,12 +48,12 @@ const createInternDetails = async function (req, res) {
 
         const findCollege = await collegeModel.findOne({name:collegeName , isDeleted:false})
         if (!findCollege) {
-            return res.status(400).send({status: false, data: "college not exists"})
+            return res.status(400).send({status: false, message: "college not exists"})
            
         }
         internData.collegeId=findCollege._id
         const saveData = await internModel.create(internData)
-        return res.status(201).send({ status: true, data: saveData })
+        return res.status(201).send({ status: true, msg: saveData })
     }
     catch (error) {
         return res.status(500).send({ status: false, msg: error.message })

@@ -20,4 +20,4 @@ const createInternDetails = async function (req, res) {
 
 //================================================POST interns======================================================
 
-module.exports.createInternDetails=createInternDetails
+module.exports.createInternDetails=createInternDetails;

@@ -1,5 +1,7 @@
 const collegeModel = require("../models/collegeModel")
 const internModel = require("../models/internModel")
+
+//create college details
 const createCollege = async function (req, res) {
     try {
 
@@ -9,6 +11,7 @@ const createCollege = async function (req, res) {
             return res.status(400).send({ status: false, message: "name is required" })
 
         }
+    
         if (!/^[a-zA-Z]+$/.test(name)) {
             return res.status(400).send({ status: false, message: ` name should be a Character` });
         }
@@ -21,6 +24,8 @@ const createCollege = async function (req, res) {
         if (!logoLink) {
             return res.status(400).send({ status: false, msg: "logolink is required" })
         }
+        //unique validation 
+        
         const CollegeCreated = await collegeModel.create(req.body);
         return res.status(201).send({ status: true, data: CollegeCreated, msg: "college Successfully Created" });
         // if (!Data) {

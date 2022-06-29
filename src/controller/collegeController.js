@@ -20,21 +20,22 @@ const createCollege = async function (req, res) {
         if (!validator.isValid(name)) {
             return res.status(400).send({ status: false, msg: "name required " })
         }
-    
+
 
         if (!/^[a-z]+$/.test(name)) {
             return res.status(400).send({ status: false, message: ` ${name} name should be a Character and lowerCase` });
-         }
+        }
         if (!fullName) {
             return res.status(400).send({ status: false, message: "fullName is required" })
         }
-       
+
         if (!logoLink) {
             return res.status(400).send({ status: false, msg: "logolink is required" })
         }
 
         const collegeCreated = await collegeModel.create(req.body);
         return res.status(201).send({ status: true, data: collegeCreated, msg: "college Successfully Created" });
+
 
     } catch (err) {
         return res.status(500).send({ status: false, msg: err.message })
@@ -56,11 +57,11 @@ const getCollegeDetails = async function (req, res) {
             return res.status(400).send({ status: false, msg: "please provide college name in query params" })
         }
 
-        
+
 
         // college validation 
 
-        let collegeDetail = await collegeModel.findOne({ name: collegeName, isDeleted: false  })
+        let collegeDetail = await collegeModel.findOne({ name: collegeName, isDeleted: false })
         if (!collegeDetail) {
             return res.status(400).send({ status: false, msg: "college not found please provide valid college name" })
         }
@@ -85,5 +86,5 @@ const getCollegeDetails = async function (req, res) {
 }
 
 
-module.exports. getCollegeDetails =  getCollegeDetails;
+module.exports.getCollegeDetails = getCollegeDetails;
 module.exports.createCollege = createCollege;

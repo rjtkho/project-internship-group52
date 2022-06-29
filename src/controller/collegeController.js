@@ -9,10 +9,7 @@ const createCollege = async function (req, res) {
     try {
 
         let { name, fullName, logoLink } = req.body;
-        if (!name) {
-            return res.status(400).send({ status: false, message: "name is required" })
-
-        }
+       
         const checkName = await collegeModel.findOne({ name: name });
         if (checkName) {
             return res.status(400).send({ status: false, msg: "name already present please enter another college name" })
@@ -45,46 +42,42 @@ const createCollege = async function (req, res) {
 
 //================================================Get College Deatails======================================================
 
-//get college details
 
-const getCollegeDetails = async function (req, res) {
+
+const getInternDeatails = async function (req, res) {
+
     try {
-        let collegeName = req.query.collegeName;
+        let collegeName = req.query.collegeName; 
+        
+         if (!validator.isValid(collegeName)) {
+             res.status(400).send({ status: false, msg: "Enter a College Name in the query parameter" });
+             return
+         }
 
-        // request query params  validation
-
-        if (!collegeName) {
-            return res.status(400).send({ status: false, msg: "please provide college name in query params" })
+        let findCollege = await collegeModel.findOne({ name: collegeName })
+        if (!findCollege) return res.status(404).send({ status: false, msg: "No College Found" });
+        
+        
+        let Intern = await internModel.find({ collegeId: findCollege }).select({ name: 1, email: 1, mobile: 1 });
+        if(Intern.length==0){
+            res.status(404).send({ status: false, msg: " No Intern Found" });
+            return
         }
-
-
-
-        // college validation 
-
-        let collegeDetail = await collegeModel.findOne({ name: collegeName, isDeleted: false })
-        if (!collegeDetail) {
-            return res.status(400).send({ status: false, msg: "college not found please provide valid college name" })
+        let collegeAndAllIntern={   
+            "name" : findCollege.name,
+            "fullName" : findCollege.fullName,
+            "logoLink" : findCollege.logoLink,
+            "interns" : Intern
         }
-
-
-
-        let collegeDetail1 = await collegeModel.findOne({ name: collegeName, isDeleted: false }).select({ name: 1, fullName: 1, logoLink: 1, _id: 0 })
-        let internDetail = await internModel.find({ collegeId: collegeDetail._id, isDeleted: false })
-
-        let result = {
-            name: collegeDetail1.name,
-            fullName: collegeDetail1.fullName,
-            logoLink: collegeDetail1.logoLink,
-            interns: internDetail
-        }
-        return res.status(200).send({ status: true, data: result })
-
+        
+        res.status(200).send({data: collegeAndAllIntern }) 
     } catch (error) {
-        return res.status(500).send({ status: false, msg: error.message })
+        res.status(500).send({ status: false, message: error.message })
     }
-
 }
 
 
-module.exports.getCollegeDetails = getCollegeDetails;
+
+
+module.exports.getInternDeatails = getInternDeatails;
 module.exports.createCollege = createCollege;

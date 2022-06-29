@@ -11,10 +11,8 @@ const createInternDetails = async function (req, res) {
         let internData=req.body
         let data = { name, mobile, email, collegeName, } = internData
         
-if(!Object.keys(data).length) return res.status(400).send({status: false , msg :"Please enter some data"})
-        if (!data) {
-            return res.status(400).send({ status: false, msg: "please provide college name in query params" })
-        }
+          if(Object.keys(data).length==0) return res.status(400).send({status: false , msg :"Please enter some data"})
+       
 
         const checkMobileNumber = await internModel.findOne({ mobile: mobile});
         if (checkMobileNumber) {
@@ -24,12 +22,19 @@ if(!Object.keys(data).length) return res.status(400).send({status: false , msg :
         if (!validator.isValid(name)) {
             return res.status(400).send({ status: false, msg: "name required " })
         }
-
+        if (!validator.isValid(mobile)) {
+            return res.status(400).send({ status: false, msg: "mobile required " })
+        }
 
         if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
             return res.status(400).send({ status: false, message: `mobile should be in 10 digits` });
          }
 
+
+         if (!validator.isValid(email)) {
+            return res.status(400).send({ status: false, msg: "email required " })
+        }
+        
 
         const checkEmailId = await internModel.findOne({ email: email});
         if (checkEmailId) {

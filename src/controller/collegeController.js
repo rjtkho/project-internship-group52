@@ -9,11 +9,13 @@ const createCollege = async function (req, res) {
     try {
 
         let { name, fullName, logoLink } = req.body;
+        
+
+        if(Object.keys(req.body).length==0) return res.status(400).send({status: false , msg :"Please enter some data"})
+      
+
        
-        const checkName = await collegeModel.findOne({ name: name });
-        if (checkName) {
-            return res.status(400).send({ status: false, msg: "name already present please enter another college name" })
-        }
+        
         if (!validator.isValid(name)) {
             return res.status(400).send({ status: false, msg: "name required " })
         }
@@ -25,11 +27,14 @@ const createCollege = async function (req, res) {
         if (!fullName) {
             return res.status(400).send({ status: false, message: "fullName is required" })
         }
-
         if (!logoLink) {
             return res.status(400).send({ status: false, msg: "logolink is required" })
         }
 
+        if(!/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/.test(logoLink))
+        {
+            return res.status(400).send({ status: false, msg: " Please provide valid  logolink " })
+        }
         const collegeCreated = await collegeModel.create(req.body);
         return res.status(201).send({ status: true, data: collegeCreated, msg: "college Successfully Created" });
 

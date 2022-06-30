@@ -76,8 +76,13 @@ const createInternDetails = async function (req, res) {
         internData.collegeId = findCollege._id
 
         const saveData = await internModel.create(internData)
-        return res.status(201).send({ status: true, msg: saveData })
+
+        const saveFinalData = await internModel.find(internData).select({_id:0})
+        return res.status(201).send({ status: true, msg: saveFinalData })
     }
+      
+
+
     catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
     }

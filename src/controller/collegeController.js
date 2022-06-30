@@ -7,41 +7,45 @@ const validator = require('../validator/validator')
 
 const createCollege = async function (req, res) {
     try {
-
+       
         let { name, fullName, logoLink } = req.body;
-
-
-        if (Object.keys(req.body).length == 0) return res.status(400).send({ status: false, msg: "Please enter some data" })
-
-        const checkName = await collegeModel.findOne({ name: name });
+        
+        let  data =req.body
+     
+     
+        if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Please enter some data" })
+        const nameInLowerCase=data.name.toLowerCase().trim()
+        const checkName = await collegeModel.findOne({ name: nameInLowerCase });
         if (checkName) {
             return res.status(400).send({ status: false, msg: `${name}  name  already exist please enter another name` })
         }
-        if (!validator.isValid(name)) {
+        if (!validator.isValid(data.name)) {
             return res.status(400).send({ status: false, msg: "name required " })
         }
-        
-       
-        if (!/^[a-zA-Z]+$/.test(name)) {
+         
+
+        if (!/^[a-zA-Z]+$/.test(data.name)) {
             return res.status(400).send({ status: false, message: ` ${name} name should be a Character and lowerCase` });
         }
-         if (!fullName.trim()) {
-             return res.status(400).send({ status: false, message: "fullName is required" })
-         }
 
-        if (!/^[a-zA-Z]+$/.test(fullName)) {
+           
+        if (!data.fullName.trim()) {
+            return res.status(400).send({ status: false, message: "fullName is required" })
+        }
+
+        if (!/[a-zA-Z][a-zA-Z ]+[a-zA-Z]$/.test(data.fullName.trim())) {
             return res.status(400).send({ status: false, message: ` ${fullName} fullname should be a Character` });
         }
-        if (!logoLink.trim()) {
+        if (!data.logoLink.trim()) {
             return res.status(400).send({ status: false, msg: "logolink is required" })
         }
-
+        
         if (!/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/.test(logoLink)) {
             return res.status(400).send({ status: false, msg: " Please provide valid  logolink " })
         }
-
-       
-        const collegeCreated = await collegeModel.create(req.body);
+     
+   data.name=nameInLowerCase
+        const collegeCreated = await collegeModel.create(req.body );
         return res.status(201).send({ status: true, data: collegeCreated, msg: "college Successfully Created" });
 
 

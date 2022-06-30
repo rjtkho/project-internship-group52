@@ -27,7 +27,7 @@ const createInternDetails = async function (req, res) {
         }
 
         if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
-            return res.status(400).send({ status: false, message: `mobile should be in 10 digits` });
+            return res.status(400).send({ status: false, message: ` your mobile number ${mobile} should be in 10 digits` });
          }
 
 

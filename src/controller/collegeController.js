@@ -9,13 +9,14 @@ const createCollege = async function (req, res) {
     try {
 
         let { name, fullName, logoLink } = req.body;
-        
 
-        if(Object.keys(req.body).length==0) return res.status(400).send({status: false , msg :"Please enter some data"})
-      
 
-       
-        
+        if (Object.keys(req.body).length == 0) return res.status(400).send({ status: false, msg: "Please enter some data" })
+
+        const checkName = await collegeModel.findOne({ name: name });
+        if (checkName) {
+            return res.status(400).send({ status: false, msg: `${name}  name  already exist please enter another name` })
+        }
         if (!validator.isValid(name)) {
             return res.status(400).send({ status: false, msg: "name required " })
         }
@@ -24,15 +25,18 @@ const createCollege = async function (req, res) {
         if (!/^[a-z]+$/.test(name)) {
             return res.status(400).send({ status: false, message: ` ${name} name should be a Character and lowerCase` });
         }
-        if (!fullName) {
+        if (!fullName.trim()) {
             return res.status(400).send({ status: false, message: "fullName is required" })
         }
-        if (!logoLink) {
+
+        if (!/^[a-zA-Z]+$/.test(fullName)) {
+            return res.status(400).send({ status: false, message: ` ${fullName} fullname should be a Character` });
+        }
+        if (!logoLink.trim()) {
             return res.status(400).send({ status: false, msg: "logolink is required" })
         }
 
-        if(!/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/.test(logoLink))
-        {
+        if (!/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/.test(logoLink)) {
             return res.status(400).send({ status: false, msg: " Please provide valid  logolink " })
         }
         const collegeCreated = await collegeModel.create(req.body);
@@ -52,30 +56,30 @@ const createCollege = async function (req, res) {
 const getCollegeDeatails = async function (req, res) {
 
     try {
-        let collegeName = req.query.collegeName; 
-        
-         if (!validator.isValid(collegeName)) {
-             res.status(400).send({ status: false, msg: "Enter a College Name in the query parameter" });
-             return
-         }
+        let collegeName = req.query.collegeName;
+
+        if (!validator.isValid(collegeName)) {
+            res.status(400).send({ status: false, msg: "Enter a College Name in the query parameter" });
+            return
+        }
 
         let findCollege = await collegeModel.findOne({ name: collegeName })
         if (!findCollege) return res.status(404).send({ status: false, msg: "No College Found" });
-        
-        
+
+
         let Intern = await internModel.find({ collegeId: findCollege }).select({ name: 1, email: 1, mobile: 1 });
-        if(Intern.length==0){
+        if (Intern.length == 0) {
             res.status(404).send({ status: false, msg: " No Intern Found" });
             return
         }
-        let collegeAndAllIntern={   
-            "name" : findCollege.name,
-            "fullName" : findCollege.fullName,
-            "logoLink" : findCollege.logoLink,
-            "interns" : Intern
+        let collegeAndAllIntern = {
+            "name": findCollege.name,
+            "fullName": findCollege.fullName,
+            "logoLink": findCollege.logoLink,
+            "interns": Intern
         }
-        
-        res.status(200).send({data: collegeAndAllIntern }) 
+
+        res.status(200).send({ data: collegeAndAllIntern })
     } catch (error) {
         res.status(500).send({ status: false, message: error.message })
     }

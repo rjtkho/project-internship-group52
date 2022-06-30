@@ -11,22 +11,28 @@ const createCollege = async function (req, res) {
         let { name, fullName, logoLink } = req.body;
 
 
-        if (Object.keys(req.body).length == 0) { return res.status(400).send({ status: false, msg: "Please enter some data" }) }
+        if (Object.keys(req.body).length == 0) return res.status(400).send({ status: false, msg: "Please enter some data" })
 
-
-
-
+        const checkName = await collegeModel.findOne({ name: name });
+        if (checkName) {
+            return res.status(400).send({ status: false, msg: `${name}  name  already exist please enter another name` })
+        }
         if (!validator.isValid(name)) {
             return res.status(400).send({ status: false, msg: "name required " })
         }
+        
        
-        if (!/^[a-z]+$/.test(name)) {
+        if (!/^[a-zA-Z]+$/.test(name)) {
             return res.status(400).send({ status: false, message: ` ${name} name should be a Character and lowerCase` });
         }
-        if (!fullName) {
-            return res.status(400).send({ status: false, message: "fullName is required" })
+         if (!fullName.trim()) {
+             return res.status(400).send({ status: false, message: "fullName is required" })
+         }
+
+        if (!/^[a-zA-Z]+$/.test(fullName)) {
+            return res.status(400).send({ status: false, message: ` ${fullName} fullname should be a Character` });
         }
-        if (!logoLink) {
+        if (!logoLink.trim()) {
             return res.status(400).send({ status: false, msg: "logolink is required" })
         }
 
@@ -49,7 +55,7 @@ const createCollege = async function (req, res) {
 
 
 
-const getInternDeatails = async function (req, res) {
+const getCollegeDeatails = async function (req, res) {
 
     try {
         let collegeName = req.query.collegeName;
@@ -84,5 +90,5 @@ const getInternDeatails = async function (req, res) {
 
 
 
-module.exports.getInternDeatails = getInternDeatails;
+module.exports.getCollegeDeatails = getCollegeDeatails;
 module.exports.createCollege = createCollege;

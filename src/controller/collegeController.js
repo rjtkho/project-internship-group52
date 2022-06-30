@@ -48,7 +48,7 @@ const createCollege = async function (req, res) {
             return res.status(400).send({ status: false, msg: " Please provide valid  logolink " })
         }
 
-        data.name = nameInLowerCase
+        data.name = nameInLowerCase // reasign
 
         const collegeCreated = await collegeModel.create(req.body);
         return res.status(201).send({ status: true, data: collegeCreated, msg: "college Successfully Created" });
@@ -69,12 +69,17 @@ const getCollegeDeatails = async function (req, res) {
     try {
         let collegeName = req.query.collegeName;
 
-        collegeName = collegeName.toLowerCase()
-
         if (!validator.isValid(collegeName)) {
             res.status(400).send({ status: false, msg: "Enter a College Name in the query parameter" });
             return
         }
+        if(!Object.keys(collegeName)){
+            res.status(400).send({ status: false, msg: "Enter a College Name in the query parameter" });
+            return
+        }
+        
+        collegeName = collegeName.toLowerCase()
+
 
         let findCollege = await collegeModel.findOne({ name: collegeName })
         if (!findCollege) return res.status(404).send({ status: false, msg: "No College Found" });

@@ -69,6 +69,8 @@ const getCollegeDeatails = async function (req, res) {
     try {
         let collegeName = req.query.collegeName;
 
+        collegeName = collegeName.toLowerCase()
+
         if (!validator.isValid(collegeName)) {
             res.status(400).send({ status: false, msg: "Enter a College Name in the query parameter" });
             return

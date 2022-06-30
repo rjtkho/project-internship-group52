@@ -8,37 +8,33 @@ const createInternDetails = async function (req, res) {
 
 
     try {
-        let internData = req.body
-        let data = { name, mobile, email, collegeName,  collegeId} = internData;
+
+        let internData = { name, mobile, email, collegeName, collegeId } = req.body
 
 
-        if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Please enter some data" })
+        if (Object.keys(internData).length == 0) return res.status(400).send({ status: false, msg: "Please enter some data" })
 
 
-        const checkMobileNumber = await internModel.findOne({ mobile: mobile });
 
-        if (checkMobileNumber) {
-            return res.status(400).send({ status: false, msg: ` ${mobile} mobile number  already exist please enter another mobile number` })
-        }
+        //mobile number validation
+       
 
         if (!validator.isValid(name)) {
             return res.status(400).send({ status: false, msg: "name required " })
         }
 
+
         if (!/[a-zA-Z][a-zA-Z ]+[a-zA-Z]$/.test(name)) {
             return res.status(400).send({ status: false, message: ` ${name} please enter name in character, ex:ram` });
-        }
-        if (!validator.isValid(mobile)) {
-            return res.status(400).send({ status: false, msg: "mobile required " })
-        }
-
-        if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
-            return res.status(400).send({ status: false, message: ` Please enter valid mobile number` });
         }
 
 
         if (!validator.isValid(email)) {
             return res.status(400).send({ status: false, msg: "email required " })
+        }
+
+        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            return res.status(400).send({ status: false, message: `Please enter valid email address ex:rohan123@gmail.com` });
         }
 
 
@@ -47,16 +43,31 @@ const createInternDetails = async function (req, res) {
             return res.status(400).send({ status: false, msg: ` ${email} email already exists please enter another another email` })
         }
 
-        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-            return res.status(400).send({ status: false, message: `Please enter valid email address ex:rohan123@gmail.com` });
+        if (!validator.isValid(mobile)) {
+            return res.status(400).send({ status: false, msg: "mobile required " })
         }
 
-        
+        const checkMobileNumber = await internModel.findOne({ mobile: mobile });
+        if (checkMobileNumber) {
+            return res.status(400).send({ status: false, msg: ` ${mobile} mobile number  already exist please enter another mobile number` })
+        }
+
+       
 
 
-        const nameInLowerCase = data.collegeName.toLowerCase().trim()
+        if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
+            return res.status(400).send({ status: false, message: ` Please enter valid mobile number` });
+        }
 
-        const findCollege = await collegeModel.findOne({ name: nameInLowerCase, isDeleted: false })
+        if (!validator.isValid(collegeName)) {
+            return res.status(400).send({ status: false, msg: " college name is required " });
+
+        }
+
+
+        const nameInLowerCase = internData.collegeName.toLowerCase().trim()
+
+        const findCollege = await collegeModel.findOne({ name: nameInLowerCase, isDeleted: false })//how to hide id
         if (!findCollege) {
             return res.status(400).send({ status: false, data: "college not exists" })
 

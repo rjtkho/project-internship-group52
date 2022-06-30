@@ -1,20 +1,22 @@
-const  mongoose  = require("mongoose")
-const collegeModel=require("../models/collegeModel")
+const mongoose = require("mongoose")
+const collegeModel = require("../models/collegeModel")
 const internModel = require("../models/internModel")
 const validator = require('../validator/validator')
 
 //================================================Create interns details======================================================
 const createInternDetails = async function (req, res) {
 
-        
-    try {
-        
-        let  { name, mobile, email, collegeName, } = req.body
-        
-          if(Object.keys(data).length==0) return res.status(400).send({status: false , msg :"Please enter some data"})
-       
 
-        const checkMobileNumber = await internModel.findOne({ mobile: mobile});
+    try {
+        let internData = req.body
+        let data = { name, mobile, email, collegeName,  collegeId} = internData;
+
+
+        if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Please enter some data" })
+
+
+        const checkMobileNumber = await internModel.findOne({ mobile: mobile });
+
         if (checkMobileNumber) {
             return res.status(400).send({ status: false, msg: ` ${mobile} mobile number  already exist please enter another mobile number` })
         }
@@ -22,36 +24,46 @@ const createInternDetails = async function (req, res) {
         if (!validator.isValid(name)) {
             return res.status(400).send({ status: false, msg: "name required " })
         }
+
+        if (!/[a-zA-Z][a-zA-Z ]+[a-zA-Z]$/.test(name)) {
+            return res.status(400).send({ status: false, message: ` ${name} please enter name in character, ex:ram` });
+        }
         if (!validator.isValid(mobile)) {
             return res.status(400).send({ status: false, msg: "mobile required " })
         }
 
         if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
-            return res.status(400).send({ status: false, message: ` your mobile number ${mobile} should be in 10 digits` });
-         }
+            return res.status(400).send({ status: false, message: ` Please enter valid mobile number` });
+        }
 
 
-         if (!validator.isValid(email)) {
+        if (!validator.isValid(email)) {
             return res.status(400).send({ status: false, msg: "email required " })
         }
-        
 
-        const checkEmailId = await internModel.findOne({ email: email});
+
+        const checkEmailId = await internModel.findOne({ email: email });
         if (checkEmailId) {
             return res.status(400).send({ status: false, msg: ` ${email} email already exists please enter another another email` })
         }
 
         if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-            return res.status(400).send({ status: false, message: `Email should be a valid  syntax` });
-         }
- 
-
-        const findCollege = await collegeModel.findOne({name:collegeName , isDeleted:false})
-        if (!findCollege) {
-            return res.status(400).send({status: false, message: "college not exists"})
-           
+            return res.status(400).send({ status: false, message: `Please enter valid email address ex:rohan123@gmail.com` });
         }
-        internData.collegeId=findCollege._id
+
+        
+
+
+        const nameInLowerCase = data.collegeName.toLowerCase().trim()
+
+        const findCollege = await collegeModel.findOne({ name: nameInLowerCase, isDeleted: false })
+        if (!findCollege) {
+            return res.status(400).send({ status: false, data: "college not exists" })
+
+        }
+
+        internData.collegeId = findCollege._id
+
         const saveData = await internModel.create(internData)
         return res.status(201).send({ status: true, msg: saveData })
     }
@@ -62,4 +74,4 @@ const createInternDetails = async function (req, res) {
 
 //================================================Create interns details======================================================
 
-module.exports.createInternDetails=createInternDetails;
+module.exports.createInternDetails = createInternDetails;

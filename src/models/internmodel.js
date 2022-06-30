@@ -1,6 +1,11 @@
 const mongoose = require('mongoose')
 const internSchema = new mongoose.Schema({
 
+
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
     name: {
         type: String,
         required: true,
